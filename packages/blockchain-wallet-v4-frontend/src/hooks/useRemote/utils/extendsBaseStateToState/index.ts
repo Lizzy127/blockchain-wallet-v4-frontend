@@ -1,0 +1,1 @@
+export { extendsBaseStateToState } from './extendsBaseStateToState'
