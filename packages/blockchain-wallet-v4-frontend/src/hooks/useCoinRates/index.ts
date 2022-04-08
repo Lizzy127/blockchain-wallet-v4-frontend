@@ -1,2 +1,2 @@
-export type { CoinRatesHookProps } from './types'
+export type { CoinRatesHook, CoinRatesHookProps } from './types'
 export { useCoinRates } from './useCoinRates'

@@ -1,0 +1,1 @@
+export { isHook } from './isHook'

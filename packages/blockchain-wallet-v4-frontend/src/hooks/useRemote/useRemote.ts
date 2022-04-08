@@ -2,8 +2,13 @@ import { useSelector } from 'react-redux'
 
 import { RemoteDataType } from '@core/types'
 
-import { RemoteHookBaseState, RemoteHookSelector, RemoteHookState } from './types'
-import { extendsBaseStateToState } from './utils'
+import { RemoteHookSelector, RemoteHookState } from './types'
+import {
+  createRemoteFailureState,
+  createRemoteLoadingState,
+  createRemoteNotAskedState,
+  createRemoteSuccessState
+} from './utils'
 
 export const useRemote = <ERROR extends unknown = unknown, RESULT extends unknown = unknown>(
   selector: RemoteHookSelector<ERROR, RESULT>
@@ -14,25 +19,15 @@ export const useRemote = <ERROR extends unknown = unknown, RESULT extends unknow
 
   const mapRemoteDataStateToRemoteHookBaseState: Record<
     'NotAsked' | 'Failure' | 'Loading' | 'Success',
-    (data: RemoteDataType<ERROR, RESULT>) => RemoteHookBaseState<ERROR, RESULT>
+    (data: RemoteDataType<ERROR, RESULT>) => RemoteHookState<ERROR, RESULT>
   > = {
-    Failure: (data) => ({
-      error: data['@@values'][0] as ERROR
-    }),
-    Loading: () => ({
-      isLoading: true
-    }),
-    NotAsked: () => ({
-      isNotAsked: true
-    }),
-    Success: ({ data }) => ({
-      data
-    })
+    Failure: (data) => createRemoteFailureState(data['@@values'][0] as ERROR),
+    Loading: createRemoteLoadingState,
+    NotAsked: createRemoteNotAskedState,
+    Success: ({ data }) => createRemoteSuccessState(data)
   }
 
   const stateBuilder = mapRemoteDataStateToRemoteHookBaseState[remoteDataState]
 
-  const state = stateBuilder(data)
-
-  return extendsBaseStateToState(state)
+  return stateBuilder(data)
 }
